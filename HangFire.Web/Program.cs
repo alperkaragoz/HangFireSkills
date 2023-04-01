@@ -1,7 +1,21 @@
+using Hangfire;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var provider = builder.Services.BuildServiceProvider();
+var configuration = provider.GetRequiredService<IConfiguration>();
+
+builder.Services.AddHangfire(config =>
+{
+    // Hangfire'ý Ms Sql Server' da kullanacaðýz.
+    config.UseSqlServerStorage(configuration.GetConnectionString("HangFireConnection"));
+});
+
+builder.Services.AddHangfireServer();
+
 
 var app = builder.Build();
 
@@ -23,5 +37,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Hangfire Dashboard'u yüklüyoruz.
+app.UseHangfireDashboard(pathMatch: "/hangfire");
 
 app.Run();
