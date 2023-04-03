@@ -40,6 +40,7 @@ namespace HangFire.Web.Controllers
 
         public IActionResult SavePicture()
         {
+            Jobs.RecurringJob.ReportingJob();
             return View();
         }
         [HttpPost]
@@ -59,7 +60,7 @@ namespace HangFire.Web.Controllers
                 await picture.CopyToAsync(stream);
             }
 
-            string jobId = Jobs.DelayedJob.AddWatermarkJob(newFileName,"www.alperkaragoz.com");
+            string jobId = Jobs.DelayedJob.AddWatermarkJob(newFileName, "www.alperkaragoz.com");
 
             return View();
         }
