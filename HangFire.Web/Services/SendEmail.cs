@@ -14,7 +14,7 @@ namespace HangFire.Web.Services
             _configuration = configuration;
         }
 
-
+        //https://mailtrap.io/inboxes/2164827/messages içindeki örnek kod metodu.
         public void EmailSend(string userId, string message)
         {
 
