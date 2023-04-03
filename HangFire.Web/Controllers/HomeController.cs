@@ -1,4 +1,5 @@
-﻿using HangFire.Web.Jobs;
+﻿using Hangfire;
+using HangFire.Web.Jobs;
 using HangFire.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -34,6 +35,35 @@ namespace HangFire.Web.Controllers
         {
             // Job'ı oluşturuyoruz.
             FireAndForgetJob.EmailSenderJob("alperid", "TOLGANT");
+            return View();
+        }
+
+        public IActionResult SavePicture()
+        {
+            Jobs.RecurringJob.ReportingJob();
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> SavePicture(IFormFile picture)
+        {
+            string newFileName = string.Empty;
+
+            if (picture != null && picture.Length > 0)
+            {
+                newFileName = Guid.NewGuid().ToString() + Path.GetExtension(picture.FileName);
+            }
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/pictures", newFileName);
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await picture.CopyToAsync(stream);
+            }
+
+            string jobId = Jobs.DelayedJob.AddWatermarkJob(newFileName, "www.alperkaragoz.com");
+
+            Jobs.ContinuationsJob.WriteWatermarkStatusJob(jobId, newFileName);
+
             return View();
         }
     }
