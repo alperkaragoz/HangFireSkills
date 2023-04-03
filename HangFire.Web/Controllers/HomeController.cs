@@ -62,6 +62,8 @@ namespace HangFire.Web.Controllers
 
             string jobId = Jobs.DelayedJob.AddWatermarkJob(newFileName, "www.alperkaragoz.com");
 
+            Jobs.ContinuationsJob.WriteWatermarkStatusJob(jobId, newFileName);
+
             return View();
         }
     }
